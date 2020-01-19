@@ -1,0 +1,82 @@
+#---
+#apiVersion: tekton.dev/v1alpha1
+#kind: Task
+#metadata:
+#  name: app-build-and-push
+#spec:
+#  inputs:
+#    resources:
+#      - name: source
+#        type: git
+#    params:
+#      - name: pathToContext
+#        description: The path to the build context, used by Kaniko - within the workspace
+#        default: .
+#      - name: pathToDockerFile
+#        description: The path to the dockerfile to build (relative to the context)
+#        default: Dockerfile
+#      - name: imageUrl
+#        description: Url of image repository
+#      - name: imageTag
+#        description: Tag to apply to the built image
+#        default: "latest"
+#  steps:
+#    - name: build-and-push
+#      image: gcr.io/kaniko-project/executor
+#      command:
+#        - /kaniko/executor
+#      args:
+#        - --dockerfile=${inputs.params.pathToDockerFile}
+#        - --destination=${inputs.params.imageUrl}:${inputs.params.imageTag}
+#        - --context=/workspace/git-source/${inputs.params.pathToContext}
+---
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: apply-manifests
+spec:
+  inputs:
+    resources:
+      - {type: git, name: source}
+    params:
+      - name: manifest_dir
+        description: The directory in source that contains yaml manifests
+        type: string
+        default: "k8s"
+
+  steps:
+    - name: apply
+      image: quay.io/openshift/origin-cli:latest
+      workingDir: /workspace/source
+      command: ["/bin/bash", "-c"]
+      args:
+        - |-
+          echo Applying manifests in $(inputs.params.manifest_dir) directory
+          oc apply -f $(inputs.params.manifest_dir)
+          echo -----------------------------------
+---
+apiVersion: tekton.dev/v1alpha1
+kind: Task
+metadata:
+  name: update-deployment
+spec:
+  inputs:
+    resources:
+      - {type: image, name: image}
+    params:
+      - name: deployment
+        description: The name of the deployment patch the image
+        type: string
+
+  steps:
+    - name: patch
+      image: quay.io/openshift/origin-cli:latest
+      command: ["/bin/bash", "-c"]
+      args:
+        - |-
+          oc patch deployment $(inputs.params.deployment) --patch='{"spec":{"template":{"spec":{
+            "containers":[{
+              "name": "$(inputs.params.deployment)",
+              "image":"$(inputs.resources.image.url)"
+            }]
+          }}}}'

@@ -1,0 +1,51 @@
+apiVersion: tekton.dev/v1alpha1
+kind: Pipeline
+metadata:
+  name: build-and-deploy
+spec:
+  resources:
+    - name: app-repo
+      type: git
+    - name: app-image
+      type: image
+
+  tasks:
+    - name: build-app
+      taskRef:
+        name: buildah
+        kind: ClusterTask
+      resources:
+        inputs:
+          - name: source
+            resource: app-repo
+        outputs:
+          - name: image
+            resource: app-image
+      params:
+        - name: TLSVERIFY
+          value: "false"
+        - name: DOCKERFILE
+          value: ./app/Dockerfile
+
+    - name: apply-app-manifests
+      taskRef:
+        name: apply-manifests
+      resources:
+        inputs:
+          - name: source
+            resource: app-repo
+      runAfter:
+        - build-app
+
+    - name: update-app-image
+      taskRef:
+        name: update-deployment
+      resources:
+        inputs:
+          - name: image
+            resource: app-image
+      params:
+        - name: deployment
+          value: "app"
+      runAfter:
+        - apply-app-manifests
