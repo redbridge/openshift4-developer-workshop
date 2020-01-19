@@ -1,34 +1,41 @@
 #---
+# Builds an image via kaniko and pushes it to registry.
 #apiVersion: tekton.dev/v1alpha1
 #kind: Task
 #metadata:
-#  name: app-build-and-push
+#  name: build-push-kaniko
 #spec:
 #  inputs:
 #    resources:
-#      - name: source
-#        type: git
+#    - name: source
+#      type: git
 #    params:
-#      - name: pathToContext
-#        description: The path to the build context, used by Kaniko - within the workspace
-#        default: .
-#      - name: pathToDockerFile
-#        description: The path to the dockerfile to build (relative to the context)
-#        default: Dockerfile
-#      - name: imageUrl
-#        description: Url of image repository
-#      - name: imageTag
-#        description: Tag to apply to the built image
-#        default: "latest"
+#    - name: pathToDockerFile
+#      description: The path to the dockerfile to build
+#      default: /workspace/workspace/Dockerfile
+#    - name: pathToContext
+#      description: The build context used by Kaniko (https://github.com/GoogleContainerTools/kaniko#kaniko-build-contexts)
+#      default: /workspace/workspace
+#  outputs:
+#    resources:
+#    - name: app-image
+#      type: image
 #  steps:
-#    - name: build-and-push
-#      image: gcr.io/kaniko-project/executor
-#      command:
-#        - /kaniko/executor
-#      args:
-#        - --dockerfile=${inputs.params.pathToDockerFile}
-#        - --destination=${inputs.params.imageUrl}:${inputs.params.imageTag}
-#        - --context=/workspace/git-source/${inputs.params.pathToContext}
+#  - name: build-and-push
+#    image: gcr.io/kaniko-project/executor:v0.13.0
+#    # specifying DOCKER_CONFIG is required to allow kaniko to detect docker credential
+#    env:
+#    - name: "DOCKER_CONFIG"
+#      value: "/tekton/home/.docker/"
+#    command:
+#    - /kaniko/executor
+#    args:
+#    - --dockerfile=$(inputs.params.pathToDockerFile)
+#    - --destination=$(outputs.resources.app-image.url)
+#    - --context=$(inputs.params.pathToContext)
+#    - --oci-layout-path=$(inputs.resources.app-image.path)
+#    securityContext:
+#      runAsUser: 0
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: Task

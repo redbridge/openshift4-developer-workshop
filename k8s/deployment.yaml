@@ -18,13 +18,13 @@ spec:
         - image: quay.io/openshift-pipeline/app:latest
           resources:
               requests:
-                memory: "512Mi"
+                memory: "2048Mi"
                 cpu: "250m"
               limits:
-                memory: "1024Mi"
+                memory: "2048Mi"
                 cpu: "500m"
           imagePullPolicy: Always
-          name: ui
+          name: app
           ports:
             - containerPort: 8080
               protocol: TCP
