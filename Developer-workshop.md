@@ -53,9 +53,17 @@ spec:
 
 [tkn cli](https://github.com/tektoncd/cli#installing-tkn)
 [openshift-pipelines](https://github.com/openshift/pipelines-tutorial)
+[ibm tekton](https://developer.ibm.com/tutorials/knative-build-app-development-with-tekton/)
 
 ##### Create a pipeline
 
 1. Create a namespace
-2. Create PipelineResources (imagerepo, gitrepo) (https://github.com/tektoncd/pipeline/blob/master/examples/taskruns/git-ssh-creds.yaml
-)
+2. Create PipelineResources (git, image) (https://github.com/tektoncd/pipeline/blob/master/examples/taskruns/git-ssh-creds.yaml)
+3. Create tasks
+4. Create pipeline
+5. Run pipeline: `tkn pipeline start build-and-deploy` 
+
+Use SSH Creds
+
+1. Add a [service account and secrets](https://github.com/tektoncd/pipeline/blob/master/examples/taskruns/git-ssh-creds.yaml)
+

@@ -5,7 +5,7 @@ metadata:
     app: app
   name: app
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: app
@@ -15,7 +15,7 @@ spec:
         app: app
     spec:
       containers:
-        - image: quay.io/openshift-pipeline/vote-ui:latest
+        - image: quay.io/openshift-pipeline/app:latest
           resources:
               requests:
                 memory: "512Mi"
