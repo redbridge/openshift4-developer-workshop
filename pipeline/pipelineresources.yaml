@@ -9,7 +9,7 @@ spec:
     - name: revision
       value: master
     - name: url
-      value: git@github.com:redbridge/openshift4-developer-workshop.git
+      value: https://github.com/redbridge/openshift4-developer-workshop
 ---
 apiVersion: tekton.dev/v1alpha1
 kind: PipelineResource
