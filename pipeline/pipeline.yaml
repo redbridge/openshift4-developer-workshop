@@ -24,8 +24,6 @@ spec:
       params:
         - name: TLSVERIFY
           value: "false"
-        - name: DOCKERFILE
-          value: ./app/Dockerfile
 
     - name: apply-app-manifests
       taskRef:
