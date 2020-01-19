@@ -15,7 +15,7 @@ spec:
         app: app
     spec:
       containers:
-        - image: quay.io/openshift-pipeline/app:latest
+        - image: image-registry.openshift-image-registry.svc:5000/pipelines-tutorial/app:latest
           resources:
               requests:
                 memory: "2048Mi"
