@@ -15,6 +15,10 @@ Kunna bygga och deploya containers i Openshift. Skapa och bygga pipelines med Op
 * Dockerfile
 * Image registry
 * Bygg, push & pull
+  * Lägg till default-route-openshift-image-registry.apps.ocpdev.rbcloud.net till insecure registries.
+  * `oc whoami -t`
+  * `docker login -u unset -p $(oc whoami -t) default-route-openshift-image-registry.apps.ocpdev.rbcloud.net`
+  * `docker push default-route-openshift-image-registry.apps.ocpdev.rbcloud.net/<namespace>/app:123` 
 
 
 #### Openshift
@@ -30,6 +34,7 @@ Kunna bygga och deploya containers i Openshift. Skapa och bygga pipelines med Op
 #### Openshift cli (oc)
 
 * Använda, skapa app.
+  * `oc run --image=image-registry.openshift-image-registry.svc:5000/pipelines-tutorial/app test` 
 * Yaml
 
 #### Openshift pipelines
